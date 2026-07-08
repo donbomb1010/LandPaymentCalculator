@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Land Partner Calculator</title>
+<style>
+body{font-family:Arial;background:#f4f6f8;margin:20px}
+.card{background:#fff;padding:15px;border-radius:10px;box-shadow:0 2px 8px #0002;margin-bottom:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+input,button{padding:8px;width:100%;box-sizing:border-box}
+button{background:#1565c0;color:#fff;border:none;border-radius:6px;cursor:pointer}
+.partner{border:1px solid #ddd;padding:10px;border-radius:8px;margin:8px 0}
+table{width:100%;border-collapse:collapse}
+th,td{border-bottom:1px solid #ddd;padding:8px;text-align:left}
+</style>
+</head>
+<body>
+
+<div class="card">
+<h2>Land Details</h2>
+<div class="grid">
+<div><label>1 Vigha = Guntha</label><input id="conv" type="number" value="16"></div>
+<div><label>Total Vigha</label><input id="tv" type="number" value="10"></div>
+<div><label>Total Guntha</label><input id="tg" type="number" value="0"></div>
+<div><label>Price / Vigha</label><input id="price" type="number" value="2000000"></div>
+</div>
+</div>
+
+<div class="card">
+<h2>Expenses</h2>
+<div class="grid">
+<div><label>Stamp</label><input class="extra" type="number" value="200000"></div>
+<div><label>Registration</label><input class="extra" type="number" value="50000"></div>
+<div><label>Broker</label><input class="extra" type="number" value="100000"></div>
+<div><label>Other</label><input class="extra" type="number" value="0"></div>
+</div>
+</div>
+
+<div class="card">
+<h2>Partners</h2>
+<div id="partners"></div>
+<button onclick="addPartner()">+ Add Partner</button>
+</div>
+
+<div class="card">
+<h2>Summary</h2>
+<div id="summary"></div>
+<br>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Land</th>
+<th>%</th>
+<th>Land Amount</th>
+<th>Extra Share</th>
+<th>Final Total</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+
+<script>
+const partners=document.getElementById("partners");
+
+function addPartner(n="",v=0,g=0){
+ let d=document.createElement("div");
+ d.className="partner";
+ d.innerHTML=`
+ <div class="grid">
+ <input class="name" placeholder="Name" value="${n}">
+ <input class="v" type="number" placeholder="Vigha" value="${v}">
+ <input class="g" type="number" placeholder="Guntha" value="${g}">
+ <button onclick="this.parentNode.parentNode.remove();calc()">Remove</button>
+ </div>`;
+ partners.appendChild(d);
+ d.querySelectorAll("input").forEach(x=>x.oninput=calc);
+ calc();
+}
+
+addPartner("Jay",6,0);
+addPartner("Raj",4,0);
+
+document.querySelectorAll("input").forEach(i=>i.oninput=calc);
+
+function money(x){
+ return "₹"+Math.round(x).toLocaleString("en-IN");
+}
+
+function calc(){
+ let conv=Number(document.getElementById("conv").value)||16;
+ let totalGun=Number(tv.value)*conv+Number(tg.value);
+ let pricePerGun=Number(price.value)/conv;
+ let totalLandValue=pricePerGun*totalGun;
+
+ let extras=0;
+ document.querySelectorAll(".extra").forEach(e=>extras+=Number(e.value)||0);
+
+ let extraPerGun= totalGun? extras/totalGun :0;
+
+ let used=0;
+ let rows="";
+ document.querySelectorAll(".partner").forEach(p=>{
+   let name=p.querySelector(".name").value||"Partner";
+   let gun=Number(p.querySelector(".v").value)*conv+Number(p.querySelector(".g").value);
+   used+=gun;
+
+   let percent=totalGun?gun*100/totalGun:0;
+
+   let landAmount=gun*pricePerGun;
+   let extraShare=gun*extraPerGun;   // divide expenses by land
+   let finalAmount=landAmount+extraShare;
+
+   rows+=`
+   <tr>
+   <td>${name}</td>
+   <td>${Math.floor(gun/conv)} V ${gun%conv} G</td>
+   <td>${percent.toFixed(2)}%</td>
+   <td>${money(landAmount)}</td>
+   <td>${money(extraShare)}</td>
+   <td><b>${money(finalAmount)}</b></td>
+   </tr>`;
+ });
+
+ tbody.innerHTML=rows;
+
+ let remain=totalGun-used;
+ summary.innerHTML=`
+ <b>Total Land Value:</b> ${money(totalLandValue)}<br>
+ <b>Total Extra:</b> ${money(extras)}<br>
+ <b>Extra Per Guntha:</b> ${money(extraPerGun)}<br>
+ <b>Grand Total:</b> ${money(totalLandValue+extras)}<br>
+ <b>${remain>=0?
+ "Remaining Land: "+Math.floor(remain/conv)+" V "+(remain%conv)+" G":
+ "<span style='color:red'>Partners exceed total land by "+Math.abs(remain)+" Guntha</span>"
+ }</b>`;
+}
+calc();
+</script>
+</body>
+</html>
