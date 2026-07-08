@@ -1,4 +1,4 @@
-
+<!-- 
 <!DOCTYPE html>
 <html>
 <head>
@@ -140,4 +140,138 @@ function calc(){
 calc();
 </script>
 </body>
+</html> -->
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title> Land Payment Calculator</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:system-ui,Arial;background:#eef3f8;color:#222}
+header{position:sticky;top:0;background:linear-gradient(135deg,#0f766e,#2563eb);color:#fff;padding:16px;text-align:center;z-index:10}
+.container{max-width:700px;margin:auto;padding:12px}
+.card{background:#fff;border-radius:18px;padding:14px;margin:12px 0;box-shadow:0 6px 18px rgba(0,0,0,.08)}
+h2{font-size:18px;margin:0 0 12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+label{font-size:13px;font-weight:600;margin-bottom:4px;display:block}
+input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #d6dbe1;font-size:16px}
+button{width:100%;padding:13px;border:none;border-radius:12px;background:#2563eb;color:#fff;font-size:16px;font-weight:700}
+.partner{border:1px solid #e4e4e4;border-radius:14px;padding:12px;margin-top:10px;background:#fafafa}
+.tableWrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:650px}
+th,td{padding:10px;border-bottom:1px solid #eee;font-size:14px;text-align:left}
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.summary div{background:#f7fbff;padding:10px;border-radius:12px;font-weight:600}
+@media(max-width:600px){.summary{grid-template-columns:1fr}}
+.ad{border:2px dashed #bbb;padding:18px;text-align:center;border-radius:14px;color:#666}
+</style>
+</head>
+<body>
+<header>
+<h1 style="margin:0;font-size:22px">Land Payment Calculator</h1>
+</header>
+
+<div class="container">
+<div class="ad"><script async="async" data-cfasync="false" src="https://pl30255082.effectivecpmnetwork.com/4461d814a9cf20a13bb140b1aa472ec4/invoke.js"></script>
+<div id="container-4461d814a9cf20a13bb140b1aa472ec4"></div>
+</div>
+
+<div class="card">
+<h2>Land Details</h2>
+<div class="grid">
+<div><label>1 Vigha = Guntha</label><input id="conv" type="number" value="16"></div>
+<div><label>Price / Vigha (₹)</label><input id="price" type="number" value="2000000"></div>
+<div><label>Total Vigha</label><input id="tv" type="number" value="10"></div>
+<div><label>Total Guntha</label><input id="tg" type="number" value="0"></div>
+</div>
+</div>
+
+<div class="card">
+<h2>Expenses</h2>
+<div class="grid">
+<div><label>Stamp</label><input class="extra" value="200000" type="number"></div>
+<div><label>Registration</label><input class="extra" value="50000" type="number"></div>
+<div><label>Broker</label><input class="extra" value="100000" type="number"></div>
+<div><label>Other</label><input class="extra" value="0" type="number"></div>
+</div>
+</div>
+
+<div class="card">
+<h2>Partners</h2>
+<div id="partners"></div>
+<div style="margin-top:10px"><button onclick="addPartner()">+ Add Partner</button></div>
+</div>
+
+<div class="card">
+<h2>Summary</h2>
+<div class="summary" id="summary"></div>
+</div>
+
+<div class="card">
+<h2>Partner Details</h2>
+<div class="tableWrap">
+<table>
+<thead><tr><th>Name</th><th>Land</th><th>%</th><th>Land Value</th><th>Expense</th><th>Total</th></tr></thead>
+<tbody id="rows"></tbody>
+</table>
+</div>
+</div>
+
+<div class="ad"><script async="async" data-cfasync="false" src="https://pl30255082.effectivecpmnetwork.com/4461d814a9cf20a13bb140b1aa472ec4/invoke.js"></script>
+<div id="container-4461d814a9cf20a13bb140b1aa472ec4"></div>
+</div>
+</div>
+
+<script>
+const partners=document.getElementById('partners');
+function addPartner(n='',v=0,g=0){
+ const d=document.createElement('div');
+ d.className='partner';
+ d.innerHTML=`<div class="grid">
+<div><label>Name</label><input class="nm" value="${n}"></div>
+<div><label>Vigha</label><input class="pv" type="number" value="${v}"></div>
+<div><label>Guntha</label><input class="pg" type="number" value="${g}"></div>
+<div style="display:flex;align-items:end"><button onclick="this.closest('.partner').remove();calc()">Remove</button></div>
+</div>`;
+ partners.appendChild(d);
+ d.querySelectorAll('input').forEach(i=>i.oninput=calc);
+ calc();
+}
+addPartner('Jay',6,0);addPartner('Raj',4,0);
+document.querySelectorAll('input').forEach(i=>i.oninput=calc);
+function rs(v){return '₹'+Math.round(v).toLocaleString('en-IN')}
+function calc(){
+ const c=+conv.value||16;
+ const totalGun=(+tv.value||0)*c+(+tg.value||0);
+ const ppg=(+price.value||0)/c;
+ let extras=0;document.querySelectorAll('.extra').forEach(e=>extras+=+e.value||0);
+ const expPerGun=totalGun?extras/totalGun:0;
+ let used=0;rows.innerHTML='';
+ document.querySelectorAll('.partner').forEach(p=>{
+  const gun=(+p.querySelector('.pv').value||0)*c+(+p.querySelector('.pg').value||0);
+  used+=gun;
+  const land=gun*ppg, exp=gun*expPerGun, pct=totalGun?gun*100/totalGun:0;
+  rows.innerHTML+=`<tr><td>${p.querySelector('.nm').value}</td><td>${Math.floor(gun/c)}V ${gun%c}G</td><td>${pct.toFixed(2)}%</td><td>${rs(land)}</td><td>${rs(exp)}</td><td><b>${rs(land+exp)}</b></td></tr>`;
+ });
+ const remain=totalGun-used;
+ summary.innerHTML=`
+<div>Land Value<br>${rs(totalGun*ppg)}</div>
+<div>Extra<br>${rs(extras)}</div>
+<div>Grand Total<br>${rs(totalGun*ppg+extras)}</div>
+<div>${remain>=0?'Remaining: '+Math.floor(remain/c)+'V '+(remain%c)+'G':'Exceeded by '+(-remain)+'G'}</div>`;
+}
+calc();
+</script>
+</body>
 </html>
+
